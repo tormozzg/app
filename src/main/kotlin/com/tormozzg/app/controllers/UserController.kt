@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/users"])
-@PreAuthorize("hasRole('admin')")
+@PreAuthorize("hasAuthority('admin')")
 class UserController {
 
     @Autowired lateinit var usersRepository: UsersRepository
@@ -41,13 +41,13 @@ class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    @PostAuthorize("returnObject.body?.id == authentication.id or hasRole('admin')")
+    @PostAuthorize("hasAuthority('admin') or returnObject.body?.email == authentication.principal.username")
     fun load(@PathVariable(value = "id") id: Long): ResponseEntity<User?> {
         val user = usersRepository.findById(id)
-        if (user.isPresent)
-            return ResponseEntity.ok(user.get())
+        return if (user.isPresent)
+            ResponseEntity.ok(user.get())
         else
-            return ResponseEntity.notFound().build()
+            ResponseEntity.notFound().build()
     }
 
     @PostMapping

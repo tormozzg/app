@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(value = ["/roles"])
-@PreAuthorize("hasRole('admin')")
+@PreAuthorize("hasAuthority('admin')")
 class RoleController {
     @Autowired lateinit var rolesRepository: RolesRepository
 
