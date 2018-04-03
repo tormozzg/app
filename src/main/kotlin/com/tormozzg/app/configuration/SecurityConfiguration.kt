@@ -12,8 +12,9 @@ import javax.sql.DataSource
 
 @Configuration
 open class SecurityConfiguration(disableDefaults: Boolean = false) : WebSecurityConfigurerAdapter(disableDefaults) {
-    override fun configure(http: HttpSecurity?) {
+    override fun configure(http: HttpSecurity) {
         super.configure(http)
+        http.csrf().disable()
     }
 
     @Bean open fun jdbcUserDetailsManager(@Autowired dataSource: DataSource): JdbcUserDetailsManager {

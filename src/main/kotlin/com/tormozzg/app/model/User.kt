@@ -1,5 +1,6 @@
 package com.tormozzg.app.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.tormozzg.app.ContextHolder
 import com.tormozzg.app.model.technical.CreateTimestamp
 import com.tormozzg.app.model.technical.UpdateTimestamp
@@ -18,11 +19,12 @@ data class User(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: 
     @Size(min = 3, max = 100)
     var email: String = ""
 
+    @JsonIgnore
     var password: String = ""
 
     var enabled: Boolean = true
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JoinTable(name = "users_roles",
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
         inverseJoinColumns = [(JoinColumn(name = "role_id", referencedColumnName = "id"))])
@@ -31,7 +33,9 @@ data class User(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: 
     override var created: Timestamp = Timestamp(System.currentTimeMillis())
     override var updated: Timestamp = Timestamp(System.currentTimeMillis())
 
-    @Transient internal var prevPassword: String = ""
+    @JsonIgnore
+    @Transient
+    var prevPassword: String = ""
 
     @PostLoad
     fun onLoad() {

@@ -5,6 +5,7 @@ import com.tormozzg.app.model.User
 import com.tormozzg.app.model.RolesRepository
 import com.tormozzg.app.model.UsersRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.ApplicationContext
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service
 import javax.transaction.Transactional
 
 @EnableJpaRepositories("com.tormozzg.app.model")
+@EnableAutoConfiguration
 @SpringBootApplication
 open class AppApplication
 
