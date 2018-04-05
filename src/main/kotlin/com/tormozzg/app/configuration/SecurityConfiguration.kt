@@ -17,7 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true) class SecurityConfiguration(disableDefaults: Boolean = false) : WebSecurityConfigurerAdapter(disableDefaults) {
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+class SecurityConfiguration(disableDefaults: Boolean = false) : WebSecurityConfigurerAdapter(disableDefaults) {
 
     @Autowired lateinit var appUserDetailsService: AppUserDetailsService
 
