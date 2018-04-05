@@ -1,5 +1,6 @@
 package com.tormozzg.app.model
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.tormozzg.app.ContextHolder
 import com.tormozzg.app.model.technical.CreateTimestamp
@@ -31,7 +32,10 @@ data class User(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: 
         inverseJoinColumns = [(JoinColumn(name = "role_id", referencedColumnName = "id"))])
     var roles: MutableSet<Role> = mutableSetOf()
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     override var created: Timestamp = Timestamp(System.currentTimeMillis())
+
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     override var updated: Timestamp = Timestamp(System.currentTimeMillis())
 
     @JsonIgnore
@@ -66,6 +70,7 @@ data class Role(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: 
     @field:Size(min = 3, max = 100)
     var name: String = ""
 
+    @JsonFormat(shape = JsonFormat.Shape.NUMBER_INT)
     override var created: Timestamp = Timestamp(System.currentTimeMillis())
 }
 
