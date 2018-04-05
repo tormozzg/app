@@ -54,7 +54,7 @@ class RoleController {
 }
 
 data class CreateRoleObject(
-    @field:Size(min = 3, max = 25)
+    @field:Size(min = 3, max = 100)
     @field:NotNull
     @field:Unique(property = "name", entity = Role::class)
     val name: String?

@@ -17,7 +17,7 @@ import javax.validation.constraints.Size
 @EntityListeners(UsersListener::class)
 data class User(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = -1) : UpdateTimestamp {
 
-    @Size(min = 3, max = 100)
+    @field:Size(min = 3, max = 100)
     var email: String = ""
 
     @JsonIgnore
@@ -63,7 +63,7 @@ open class UsersListener {
 @Table(name = "roles", uniqueConstraints = [(UniqueConstraint(name = "uk_role_name", columnNames = ["name"]))])
 data class Role(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long = -1) : CreateTimestamp {
 
-    @Size(min = 3, max = 100)
+    @field:Size(min = 3, max = 100)
     var name: String = ""
 
     override var created: Timestamp = Timestamp(System.currentTimeMillis())
