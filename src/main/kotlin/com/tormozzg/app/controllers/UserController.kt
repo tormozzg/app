@@ -7,6 +7,7 @@ import com.tormozzg.app.model.RolesRepository
 import com.tormozzg.app.model.User
 import com.tormozzg.app.model.UsersRepository
 import com.tormozzg.app.validation.Unique
+import com.tormozzg.app.validation.ValidationResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
 import javax.validation.Validator
 import javax.validation.constraints.Email
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @RestController
@@ -60,25 +62,12 @@ class UserController {
     fun createUser(@RequestBody createObject: UserCreateObject): ResponseEntity<Any> {
         val validationResult = validator.validate(createObject)
         if (validationResult.isNotEmpty()) {
-            return ResponseEntity.badRequest().body(ObjectMapper().let { om ->
-                om.createObjectNode().let { o ->
-                    o.put("errorCount", validationResult.size)
-                    o.set("errors", om.createArrayNode().apply {
-                        addAll(validationResult.map { vr ->
-                            om.createObjectNode().apply {
-                                put("property", vr.propertyPath.toString())
-                                set("value", om.convertValue(vr.invalidValue, JsonNode::class.java))
-                                put("message", vr.message)
-                            }
-                        })
-                    })
-                }
-            })
+            return ResponseEntity.badRequest().body(ValidationResponse.createValidationResponse(validationResult))
         }
         val user = usersRepository.save(User().apply {
-            email = createObject.email
-            password = createObject.password
-            roles = rolesRepository.findAllById(createObject.roles).toMutableSet()
+            email = createObject.email!!
+            password = createObject.password!!
+            roles = rolesRepository.findAllById(createObject.roles!!).toMutableSet()
             enabled = createObject.enabled
         })
         return ResponseEntity.ok(user)
@@ -94,9 +83,11 @@ class UserController {
 }
 
 data class UserCreateObject(
-    @field:Size(min = 3, max = 100) @field:Email @field:Unique(property = "email", entity = User::class) val email: String,
-    @field:Size(min = 5) val password: String,
-    @field:Size(min = 1) val roles: List<Long>,
+    @field:Size(min = 3, max = 100) @field:Email @field:NotNull
+    @field:Unique(property = "email", entity = User::class)
+    val email: String?,
+    @field:Size(min = 5) @field:NotNull val password: String?,
+    @field:Size(min = 1) @field:NotNull val roles: List<Long>?,
     val enabled: Boolean = true
 )
 
