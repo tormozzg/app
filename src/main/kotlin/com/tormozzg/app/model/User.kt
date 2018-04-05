@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
+import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.Size
 
@@ -24,7 +25,7 @@ data class User(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: 
 
     var enabled: Boolean = true
 
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
         joinColumns = [JoinColumn(name = "user_id", referencedColumnName = "id")],
         inverseJoinColumns = [(JoinColumn(name = "role_id", referencedColumnName = "id"))])
@@ -68,6 +69,8 @@ data class Role(@Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: 
     override var created: Timestamp = Timestamp(System.currentTimeMillis())
 }
 
-@Repository interface UsersRepository : JpaRepository<User, Long>
+@Repository interface UsersRepository : JpaRepository<User, Long> {
+    fun findByEmail(email: String): Optional<User>
+}
 
 @Repository interface RolesRepository : JpaRepository<Role, Long>
