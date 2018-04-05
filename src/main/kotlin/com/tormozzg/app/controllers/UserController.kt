@@ -1,8 +1,5 @@
 package com.tormozzg.app.controllers
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.node.ObjectNode
 import com.tormozzg.app.model.RolesRepository
 import com.tormozzg.app.model.User
 import com.tormozzg.app.model.UsersRepository
@@ -12,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.security.access.prepost.PostAuthorize
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
@@ -23,7 +19,7 @@ import javax.validation.constraints.Size
 
 @RestController
 @RequestMapping(value = ["/users"])
-@PreAuthorize("hasAuthority('admin')")
+@PreAuthorize("isAuthenticated() and hasAuthority('admin')")
 class UserController {
 
     @Autowired lateinit var usersRepository: UsersRepository
@@ -39,8 +35,7 @@ class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    @PostAuthorize("hasAuthority('admin') or returnObject.body?.email == authentication.principal.username")
+    @PreAuthorize(" isAuthenticated() and (hasAuthority('admin') or #id == authentication.principal.id)")
     fun load(@PathVariable(value = "id") id: Long): ResponseEntity<User?> {
         val user = usersRepository.findById(id)
         return if (user.isPresent)

@@ -17,7 +17,7 @@ import javax.validation.constraints.Size
 
 @RestController
 @RequestMapping(value = ["/roles"])
-@PreAuthorize("hasAuthority('admin')")
+@PreAuthorize("isAuthenticated() and hasAuthority('admin')")
 class RoleController {
     @Autowired lateinit var rolesRepository: RolesRepository
     @Autowired lateinit var validator: Validator
