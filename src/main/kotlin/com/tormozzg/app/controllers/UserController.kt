@@ -33,17 +33,9 @@ class UserController {
 
     @GetMapping
     fun list(@RequestParam(value = "size", defaultValue = "20") size: Int = 20,
-             @RequestParam(value = "page", defaultValue = "0") page: Int = 0): ObjectNode {
+             @RequestParam(value = "page", defaultValue = "0") page: Int = 0): PageResponse {
         val result = usersRepository.findAll(PageRequest.of(page, size, Sort(Sort.Direction.ASC, "created")))
-        return ObjectMapper().let { om ->
-            om.createObjectNode().apply {
-                put("totalPages", result.totalPages)
-                put("page", page)
-                put("pageSize", size)
-                put("count", result.numberOfElements)
-                set("items", om.convertValue(result.toList(), JsonNode::class.java))
-            }
-        }
+        return PageResponse(page, size, result)
     }
 
     @GetMapping("/{id}")
