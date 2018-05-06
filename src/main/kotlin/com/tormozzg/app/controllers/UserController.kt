@@ -1,17 +1,22 @@
 package com.tormozzg.app.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.tormozzg.app.model.RolesRepository
 import com.tormozzg.app.model.User
 import com.tormozzg.app.model.UsersRepository
+import com.tormozzg.app.validation.ConstraintError
 import com.tormozzg.app.validation.Unique
 import com.tormozzg.app.validation.ValidationResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 import javax.validation.Validator
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotNull
@@ -58,6 +63,21 @@ class UserController {
             enabled = createObject.enabled
         })
         return ResponseEntity.ok(user)
+    }
+
+    @PostMapping("/{id}/enabled")
+    @Transactional
+    fun changeUserActive(@PathVariable(value = "id") id: Long, @RequestBody map: Map<String, Any>): ResponseEntity<Any> {
+        if (!usersRepository.existsById(id))
+            return ResponseEntity.notFound().build()
+
+        if (!map.containsKey("enabled") || map["enabled"] as? Boolean == null)
+            return ResponseEntity.badRequest().body(ValidationResponse.Builder().addConstraintError(ConstraintError("enabled", "Missing required property \"enabled\"")).build())
+
+        val user = usersRepository.findById(id).get()
+        user.enabled = map["enabled"] as Boolean
+        usersRepository.save(user)
+        return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping("/{id}")

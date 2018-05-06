@@ -2,24 +2,54 @@ package com.tormozzg.app.validation
 
 import javax.validation.ConstraintViolation
 
-class ValidationResponse {
-    val errorCount: Int
-    val errors: Collection<ConstraintError>
+class ValidationResponse private constructor() {
 
-    private constructor (constraints: Set<ConstraintViolation<*>>) {
-        errorCount = constraints.size
-        errors = constraints.map { ConstraintError(it) }
-    }
+    var errorCount: Int = 0
+        private set
+    var errors: Set<ConstraintError> = emptySet()
+        private set
+
 
     companion object {
         fun createValidationResponse(constraints: Set<ConstraintViolation<*>>): ValidationResponse {
-            return ValidationResponse(constraints)
+            return ValidationResponse().apply {
+                errorCount = constraints.size
+                errors = constraints.map { ConstraintError(it) }.toSet()
+            }
+        }
+    }
+
+    class Builder {
+        val errors: MutableSet<ConstraintError> = mutableSetOf()
+
+        fun addConstraintError(error: ConstraintError): Builder {
+            errors.add(error)
+            return this
+        }
+
+        fun build(): ValidationResponse {
+            return ValidationResponse().apply {
+                errorCount = errors.size
+                errors = errors.toSet()
+            }
         }
     }
 }
 
-class ConstraintError(constraint: ConstraintViolation<*>) {
-    val property: String = constraint.propertyPath.toString()
-    val value: Any? = constraint.invalidValue
-    val message: String = constraint.message
+class ConstraintError {
+    val property: String
+    val value: Any?
+    val message: String
+
+    constructor(constraints: ConstraintViolation<*>) {
+        property = constraints.propertyPath.toString()
+        message = constraints.message
+        value = constraints.invalidValue
+    }
+
+    constructor(property: String, message: String, value: Any? = null) {
+        this.property = property
+        this.message = message
+        this.value = value
+    }
 }
