@@ -17,8 +17,7 @@ info:
 spring:
   profiles: test
   datasource:
-    schema: test
-    url: jdbc:postgresql://192.168.192.5:5432/tormozzg
+    url: jdbc:postgresql://192.168.192.5:5432/tormozzg_test
     username: tormozzg
     password: tormozzg
     driver-class-name: org.postgresql.Driver
